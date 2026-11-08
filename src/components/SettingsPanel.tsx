@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Eye, EyeOff, AlertTriangle, Save } from 'lucide-react';
+import { X, AlertTriangle, Save } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { MODEL_OPTIONS } from '../utils/constants';
 import { clsx } from 'clsx';
@@ -13,7 +13,6 @@ export function SettingsPanel({ onToast }: Props) {
   const { settings, isSettingsOpen } = state;
 
   const [local, setLocal] = useState({ ...settings });
-  const [showKey, setShowKey] = useState(false);
 
   const handleSave = () => {
     dispatch({ type: 'SET_SETTINGS', payload: local });
@@ -44,26 +43,7 @@ export function SettingsPanel({ onToast }: Props) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 space-y-6">
-          {/* API Key */}
-          <FieldGroup label="OpenRouter API Key">
-            <div className="relative">
-              <input
-                type={showKey ? 'text' : 'password'}
-                value={local.apiKey}
-                onChange={e => setLocal(p => ({ ...p, apiKey: e.target.value }))}
-                placeholder="sk-or-..."
-                className={inputCls}
-              />
-              <button
-                type="button"
-                onClick={() => setShowKey(v => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-            <p className="text-xs text-gray-400 mt-1">openrouter.ai에서 발급받은 API Key를 입력하세요.</p>
-          </FieldGroup>
+          <p className="text-xs text-gray-500 dark:text-gray-400">OpenRouter API Key는 서버의 OPENROUTER_API_KEY 환경변수로 관리하며 브라우저에 저장하지 않습니다.</p>
 
           {/* Base Model 1 */}
           <FieldGroup label="기본 모델 A">

@@ -20,7 +20,6 @@ export interface FinalResult extends ModelResult {
 }
 
 export interface AppSettings {
-  apiKey: string;
   baseModel1: string;
   baseModel2: string;
   mergeModel: string;

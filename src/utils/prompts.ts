@@ -26,11 +26,11 @@ export function buildBasePrompt(inputText: string, month: number, day: number, w
 ${inputText}`;
 }
 
-export function buildMergePrompt(model1Result: string, model2Result: string): string {
+export function buildMergePrompt(originalText: string, model1Result: string, model2Result: string): string {
   return `당신은 두 조수가 정리한 학습 일지를 통합하는 전문 편집자입니다.
-아래 두 정리본의 장점만 모아 가장 정확하고 완성도 높은 하나의 통합본을 만드세요.
+원문을 최우선 근거로 두 정리본을 대조·검증하세요. 두 초안에서 공통으로 누락한 원문의 중요한 내용도 포함하되 원문에 없는 사실은 만들지 마세요.
 
-[모델 1 정리본]
+[원문 - 사실 검증 기준]\n${originalText}\n\n[모델 1 정리본]
 ${model1Result}
 
 [모델 2 정리본]

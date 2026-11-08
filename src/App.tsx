@@ -39,7 +39,7 @@ function App() {
     });
 
     try {
-      const result = await callOpenRouter(settings.apiKey, settings.mergeModel, buildMergePrompt(res1.content, res2.content));
+      const result = await callOpenRouter(settings.mergeModel, buildMergePrompt(inputText, res1.content, res2.content));
       const keywords = extractKeywords(result.content);
       const final: FinalResult = {
         modelId: settings.mergeModel,
@@ -80,11 +80,6 @@ function App() {
   }, [settings, inputDate, inputText, dispatch]);
 
   const handleSubmit = useCallback(async () => {
-    if (!settings.apiKey.trim()) {
-      addToast('설정에서 API Key를 입력하세요');
-      dispatch({ type: 'TOGGLE_SETTINGS' });
-      return;
-    }
     if (!inputText.trim()) return;
 
     dispatch({ type: 'RESET_RESULTS' });
@@ -98,10 +93,10 @@ function App() {
     dispatch({ type: 'SET_BASE_RESULT_2', payload: { modelId: settings.baseModel2, modelName: model2Name, status: 'loading', content: '', errorMessage: undefined } });
 
     const [res1, res2] = await Promise.all([
-      callOpenRouter(settings.apiKey, settings.baseModel1, prompt)
+      callOpenRouter(settings.baseModel1, prompt)
         .then(r => ({ modelId: settings.baseModel1, modelName: model1Name, ...r, status: 'success' as const }))
         .catch(err => ({ modelId: settings.baseModel1, modelName: model1Name, content: '', latencyMs: 0, status: 'error' as const, errorMessage: err instanceof Error ? err.message : '오류' })),
-      callOpenRouter(settings.apiKey, settings.baseModel2, prompt)
+      callOpenRouter(settings.baseModel2, prompt)
         .then(r => ({ modelId: settings.baseModel2, modelName: model2Name, ...r, status: 'success' as const }))
         .catch(err => ({ modelId: settings.baseModel2, modelName: model2Name, content: '', latencyMs: 0, status: 'error' as const, errorMessage: err instanceof Error ? err.message : '오류' })),
     ]);
@@ -113,13 +108,12 @@ function App() {
   }, [settings, inputDate, inputText, dispatch, addToast, runMerge]);
 
   const retryModel1 = useCallback(async () => {
-    if (!settings.apiKey.trim()) { addToast('설정에서 API Key를 입력하세요'); return; }
     const { month, day, weekday } = getDateParts(inputDate);
     const prompt = buildBasePrompt(inputText, month, day, weekday);
     const model1Name = MODEL_OPTIONS.find(m => m.id === settings.baseModel1)?.name ?? settings.baseModel1;
     dispatch({ type: 'SET_BASE_RESULT_1', payload: { modelId: settings.baseModel1, modelName: model1Name, status: 'loading', content: '', errorMessage: undefined } });
     try {
-      const r = await callOpenRouter(settings.apiKey, settings.baseModel1, prompt);
+      const r = await callOpenRouter(settings.baseModel1, prompt);
       const res1: ModelResult = { modelId: settings.baseModel1, modelName: model1Name, ...r, status: 'success' };
       dispatch({ type: 'SET_BASE_RESULT_1', payload: res1 });
       if (state.baseResult2.status === 'success') await runMerge(res1, state.baseResult2);
@@ -129,13 +123,12 @@ function App() {
   }, [settings, inputDate, inputText, dispatch, addToast, state.baseResult2, runMerge]);
 
   const retryModel2 = useCallback(async () => {
-    if (!settings.apiKey.trim()) { addToast('설정에서 API Key를 입력하세요'); return; }
     const { month, day, weekday } = getDateParts(inputDate);
     const prompt = buildBasePrompt(inputText, month, day, weekday);
     const model2Name = MODEL_OPTIONS.find(m => m.id === settings.baseModel2)?.name ?? settings.baseModel2;
     dispatch({ type: 'SET_BASE_RESULT_2', payload: { modelId: settings.baseModel2, modelName: model2Name, status: 'loading', content: '', errorMessage: undefined } });
     try {
-      const r = await callOpenRouter(settings.apiKey, settings.baseModel2, prompt);
+      const r = await callOpenRouter(settings.baseModel2, prompt);
       const res2: ModelResult = { modelId: settings.baseModel2, modelName: model2Name, ...r, status: 'success' };
       dispatch({ type: 'SET_BASE_RESULT_2', payload: res2 });
       if (state.baseResult1.status === 'success') await runMerge(state.baseResult1, res2);

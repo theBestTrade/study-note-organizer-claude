@@ -17,7 +17,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
 ];
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  apiKey: "",
   baseModel1: "anthropic/claude-sonnet-4-6",
   baseModel2: "google/gemini-3-flash-preview",
   mergeModel: "anthropic/claude-opus-4-7",
@@ -43,4 +42,3 @@ export const LS_KEYS = {
 } as const;
 
 export const MAX_HISTORY = 50;
-export const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';

@@ -11,7 +11,14 @@ const idleResult = (modelId = '', modelName = ''): ModelResult => ({
 });
 
 function loadInitialState(): AppState {
-  const savedSettings = readLocalStorage(LS_KEYS.SETTINGS, { ...DEFAULT_SETTINGS });
+  const rawSettings = readLocalStorage(LS_KEYS.SETTINGS, { ...DEFAULT_SETTINGS });
+  // Explicitly whitelist persisted settings to erase legacy browser API keys.
+  const savedSettings = {
+    baseModel1: rawSettings.baseModel1 || DEFAULT_SETTINGS.baseModel1,
+    baseModel2: rawSettings.baseModel2 || DEFAULT_SETTINGS.baseModel2,
+    mergeModel: rawSettings.mergeModel || DEFAULT_SETTINGS.mergeModel,
+    theme: rawSettings.theme === 'dark' ? 'dark' as const : 'light' as const,
+  };
   const savedHistory = readLocalStorage<HistoryItem[]>(LS_KEYS.HISTORY, []);
   const savedDraft = readLocalStorage<{ inputDate: string; inputText: string }>(
     LS_KEYS.DRAFT, { inputDate: getTodayString(), inputText: '' }
